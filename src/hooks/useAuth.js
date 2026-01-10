@@ -11,10 +11,28 @@
 
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { loginApi, logoutApi } from '../api/authApi';
+import { adminRegisterApi, loginApi, logoutApi } from '../api/authApi';
 import useAuthStore from '../store/authStore';  //zustand
 import toast from 'react-hot-toast';
 
+
+export const useAdminRegister = () => {
+  return useMutation({
+    mutationFn: async (payload) => {
+      return await adminRegisterApi(payload);
+    },
+
+    onSuccess: (data) => {
+      toast.success(`User ${data.username} registered successfully`);
+     
+    },
+
+    onError: (error) => {
+      const errorMessage = error?.response?.data?.message;
+      toast.error(errorMessage || "Registration failed. Please try again.");
+    },
+  });
+};
 
 
 
@@ -30,7 +48,7 @@ export const useLogin = () => {
 
     onSuccess: (data) => {
       console.log("🟢 TanStack success:", data);
-      toast.success(`User ${data.username} registered successfully`);
+      toast.success(`User ${data.user.username} registered successfully`);
       // ========================================
 
        login(data.user, data.accessToken);  //1st place that updates the zustand
@@ -62,7 +80,6 @@ export const useLogin = () => {
 
   console.log("🔴 TanStack error:", error?.response?.data || error.message);
 },
-
   });
 };
 

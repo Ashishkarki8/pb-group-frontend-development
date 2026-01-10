@@ -1,12 +1,14 @@
 // layouts/MainLayout.jsx
-import { Outlet } from "react-router-dom";
+import { Outlet, ScrollRestoration } from "react-router-dom";
 import Topbar from "../components/Topbar";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import StickyContactButton from "../components/StickyContactButton ";
+import ScrollToTop from "../components/ScrollToTop";
 
 
 const MainLayout = () => {
+  ScrollToTop();
   return (
     <div>
       <Topbar />
@@ -14,7 +16,7 @@ const MainLayout = () => {
       <StickyContactButton />
       <Outlet />
       <Footer />
-      
+
     </div>
   );
 };

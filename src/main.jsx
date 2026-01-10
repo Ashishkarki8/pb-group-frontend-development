@@ -2,25 +2,12 @@
 // ========================================
 // MAIN ENTRY POINT
 // ========================================
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
-
-// // Create Query Client
-// const queryClient = new QueryClient({
-//   defaultOptions: {
-//     queries: {
-//       retry: 1, // retry failed requests once
-//       refetchOnWindowFocus: false, // avoid unnecessary refetch
-//     },
-//   },
-// });
-
-// console.log("🟣 QueryClient created",queryClient);
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
