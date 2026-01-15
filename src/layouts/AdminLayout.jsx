@@ -110,7 +110,7 @@ const AdminLayout = () => {
     ];
 
     // Superadmin gets additional menu items
-    if (user?.role === 'superadmin') {
+    if (user?.role === 'super_admin') {
       baseItems.splice(3, 0, {
         id: 'teachers',
         icon: UserCheck,
@@ -213,7 +213,7 @@ const AdminLayout = () => {
                   <Menu size={20} />
                 </button>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  {user?.role === 'superadmin' ? 'Super Admin Panel' : 'Admin Panel'}
+                  {user?.role === 'super_admin' ? 'Super Admin Panel' : 'Admin Panel'}
                 </h1>
               </div>
               

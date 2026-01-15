@@ -25,9 +25,11 @@ export default function LoginPage() {
 
   const { mutate, isPending, isError, error } = useLogin();
   // Simulated login hook - replace with your actual hook
-  console.log('isError:', isError)
-  console.log('error:', error)
+  console.log('isError:', isError) //boolean for error
+  console.log('ispending:', isPending) //boolean for error
+  console.log('error:', error)  //backend actual error
    const onSubmit = (data) => {
+    console.log("inside submit")
    mutate(data, {
     onSuccess: () => {
       reset(); // ✅ Clear form here

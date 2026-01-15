@@ -8,7 +8,6 @@ import ScrollToTop from "../components/ScrollToTop";
 
 
 const MainLayout = () => {
-  ScrollToTop();
   return (
     <div>
       <Topbar />

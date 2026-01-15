@@ -22,10 +22,11 @@ export const useAdminRegister = () => {
       return await adminRegisterApi(payload);
     },
 
-    onSuccess: (data) => {
-      toast.success(`User ${data.username} registered successfully`);
-     
-    },
+   onSuccess: (response) => {
+   console.log('✅ Admin registered:', response.data);
+  const username = response.data?.data?.username || response.data?.username || 'Admin';
+  toast.success(`Admin ${username} registered successfully`);
+},
 
     onError: (error) => {
       const errorMessage = error?.response?.data?.message;
@@ -40,8 +41,8 @@ export const useLogin = () => {
   const login = useAuthStore((s) => s.login);
   const navigate = useNavigate(); // ✅ Add navigation
   console.log("inside the tanstackquery");
-  return useMutation({
-    mutationFn: async (payload) => {
+  return useMutation({  //rerenders
+    mutationFn: async (payload) => {  //doesnt rerenders  //state update hancha eg ispending true banaidinchaso feri login page nai render huncha
       console.log("🟡 TanStack mutation started",payload);
       return await loginApi(payload); // Returns { user, accessToken }
     },
@@ -51,19 +52,22 @@ export const useLogin = () => {
       toast.success(`User ${data.user.username} registered successfully`);
       // ========================================
 
-       login(data.user, data.accessToken);  //1st place that updates the zustand
-      console.log("✅ Zustand login called from TanStack");
+       login(data.user, data.accessToken);  //yo code ley chain aaba zustand bhatha lera jancha response lai
+       console.log("✅ Zustand login called from TanStack");
       
       // ========================================
       // STEP 2: Redirect based on role
       // ========================================
-      if (data.user.role === 'super_admin') {
-        console.log("🔐 SuperAdmin logged in, redirecting to admin dashboard");
-        navigate('/superadmin/dashboard'); // SuperAdmin can see everything
-      } else if (data.user.role === 'admin') {
-        console.log("👤 Regular admin logged in, redirecting to dashboard");
-        navigate('/admin/dashboard'); // Regular admin dashboard
-      }
+      console.log(!data.user)
+  
+      if (
+  data.accessToken &&
+  (data.user.role === 'admin' || data.user.role === 'superadmin')
+) {
+  console.log("this runs")
+  navigate('/admin/dashboard');  //url refresh huncha
+}
+
     },
 
    onError: (error) => {

@@ -136,16 +136,17 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 const useAuthStore = create(
-  persist(
+  persist(    //meaning save it to the local storage
     (set, get) => ({
       // STATE
       user: null,
       accessToken: null,
       isAuthenticated: false,
       isLoading: false,
-      hasHydrated: false, // ✅ Track hydration completion
+      hasHydrated: false, // ✅ Track hydration completion     Hydration = loading saved Zustand data from localStorage after refresh
 
-      // ACTIONS
+
+      // ACTIONS 
       login: (userData, token) => {
         console.log('🔐 [AuthStore] Login called');
         if (!userData || !token) {
@@ -209,14 +210,13 @@ const useAuthStore = create(
         isAuthenticated: state.isAuthenticated,
       }),
 
-      // ✅ NO skipHydration for CSR apps
-      // Hydration happens synchronously before first render
 
-      // ✅ Mark hydration as complete
-      onRehydrateStorage: () => {
+
+      onRehydrateStorage: () => {  //jaba refresh garcham page taba yo auto matically chalcha yesley chain latest storage data lincha rah has hydrated lai true banaidincha
         console.log('📦 [AuthStore] Rehydration started');
         return (state) => {
-          console.log('📦 [AuthStore] Rehydration finished');
+          console.log('📦 [AuthStore] Rehydration');
+          console.log("rehydration state",state)
           // Mark hydration complete AFTER it finishes
           if (state) {
             state.hasHydrated = true;
@@ -230,41 +230,3 @@ const useAuthStore = create(
 export default useAuthStore;
 
 
-
-
-
-
-
-
-// 1️⃣ Do you need useEffect in App.jsx?
-// ❌ No — and using it would actually be worse.
-
-// Why?
-
-// Because in your setup:
-
-// You are NOT:
-
-// Manually calling rehydrate()
-
-// Running async auth bootstrap logic
-
-// Refreshing tokens on startup
-
-// You ARE:
-
-// Letting Zustand persist hydrate automatically
-
-// Using onRehydrateStorage as the lifecycle signal
-
-// That means there is nothing imperative to run in App.jsx.
-
-// useEffect is for:
-
-// Side effects
-
-// Imperative logic
-
-// Async orchestration
-
-// You are doing pure declarative state gating, so useEffect would be unnecessary noise.

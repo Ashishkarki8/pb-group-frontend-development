@@ -30,7 +30,7 @@ const useLogout = () => {
       console.log("✅ Zustand state cleared");
 
       // Redirect to login
-      navigate("/login", { replace: true });
+      navigate("/admin/login", { replace: true });
       console.log("✅ Redirected to login");
     },
 
@@ -39,7 +39,7 @@ const useLogout = () => {
 
       // Even if API fails, clear local state
       logout();
-      navigate("/login", { replace: true });
+      navigate("/admin/login", { replace: true });
       
       console.log("⚠️ Logged out locally despite API error");
     },

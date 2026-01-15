@@ -34,7 +34,8 @@ export const loginApi = async ({username, password}) => {
   console.log("username",username) 
   
   try {
-    const response = await axiosInstance.post('/api/auth/admin/login', {
+    console.log("inside try auth")
+    const response = await axiosInstance.post('/api/auth/admin/login', {  //post makes back ja jaha bata aacha tei sabbai print garera aaija
       username,
       password,
     });
@@ -42,6 +43,7 @@ export const loginApi = async ({username, password}) => {
     console.log('✅ API: Login successful', response.data.data.user); //userdata
     console.log('✅ API: Login successful this',  response.data.data.accessToken ); //undefined   
    return {
+    //yesley acess token rah user data chutayera tanstackcode useAuth ma pathaucha
     user: response.data.data.user,
     accessToken: response.data.data.accessToken,
   };        

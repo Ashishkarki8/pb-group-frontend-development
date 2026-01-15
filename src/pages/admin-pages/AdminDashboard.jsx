@@ -120,35 +120,13 @@ import {
   UserCheck,
   Settings as SettingsIcon
 } from 'lucide-react';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar
-} from 'recharts';
+
 import useAuthStore from '../../store/authStore';
+import { Link } from 'react-router-dom';
 
 // Mock data for charts
-const chartData = [
-  { month: 'Jan', students: 120, revenue: 85000 },
-  { month: 'Feb', students: 145, revenue: 92000 },
-  { month: 'Mar', students: 180, revenue: 110000 },
-  { month: 'Apr', students: 165, revenue: 105000 },
-  { month: 'May', students: 200, revenue: 125000 },
-  { month: 'Jun', students: 225, revenue: 140000 },
-];
 
-const courseData = [
-  { course: 'Data Science', enrolled: 85 },
-  { course: 'Statistics', enrolled: 62 },
-  { course: 'Research Methods', enrolled: 45 },
-  { course: 'Analytics', enrolled: 38 },
-];
+
 
 // Stat Card Component
 const StatCard = ({ title, value, change, icon: Icon, trend }) => {
@@ -189,8 +167,9 @@ const SuperAdminDashboard = ({ user }) => {
         <p className="text-blue-100">
           Welcome back, {user?.username}! You have full system access.
         </p>
+        
       </div>
-
+      
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
@@ -290,58 +269,7 @@ const SuperAdminDashboard = ({ user }) => {
         </div>
       </div>
 
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Student Enrollment Trend</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="month" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#fff', 
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px'
-                }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="students" 
-                stroke="#2563eb" 
-                strokeWidth={3}
-                dot={{ fill: '#2563eb', r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Revenue Growth</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="month" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#fff', 
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px'
-                }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="revenue" 
-                stroke="#10b981" 
-                strokeWidth={3}
-                dot={{ fill: '#10b981', r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+    
     </div>
   );
 };
@@ -359,6 +287,7 @@ const RegularAdminDashboard = ({ user }) => {
         <p className="text-indigo-100">
           Welcome back, {user?.username}! Here's your overview.
         </p>
+        <Link to={"/admin/testing"}>click here</Link>
       </div>
 
       {/* Stats Grid */}
@@ -391,53 +320,6 @@ const RegularAdminDashboard = ({ user }) => {
           icon={Calendar}
           trend="down"
         />
-      </div>
-
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Student Enrollment Trend</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="month" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#fff', 
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px'
-                }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="students" 
-                stroke="#2563eb" 
-                strokeWidth={3}
-                dot={{ fill: '#2563eb', r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Course Popularity</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={courseData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="course" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#fff', 
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px'
-                }}
-              />
-              <Bar dataKey="enrolled" fill="#2563eb" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
       </div>
 
       {/* Recent Activity */}
@@ -478,7 +360,7 @@ export default function AdminDashboard() {
   console.log('👤 AdminDashboard: Current user:', user);
 
   // Render based on role
-  if (user?.role === 'superadmin') {
+  if (user?.role === 'super_admin') {
     return <SuperAdminDashboard user={user} />;
   }
 
