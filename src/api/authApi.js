@@ -4,21 +4,12 @@
 
 import axiosInstance from './axiosInstance';
 
-
-
-
 export const adminRegisterApi = async (payload) => {
   console.log("📤 Admin register API called with:", payload);
   const response = await axiosInstance.post("/api/auth/admin/register", payload);
   console.log("📥Admin Register API response:", response.data);
   return response.data;
 };
-
-
-
-
-
-
 
 // ========================================
 // 🔐 LOGIN API
@@ -122,3 +113,6 @@ export const getCurrentUserApi = async () => {
     throw error;
   }
 };
+
+
+

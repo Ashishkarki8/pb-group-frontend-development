@@ -9,12 +9,11 @@
 // - Optimistic updates
 // ========================================
 
-import { useMutation } from '@tanstack/react-query';
+import { QueryClient, useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { adminRegisterApi, loginApi, logoutApi } from '../api/authApi';
 import useAuthStore from '../store/authStore';  //zustand
 import toast from 'react-hot-toast';
-
 
 export const useAdminRegister = () => {
   return useMutation({
@@ -26,6 +25,11 @@ export const useAdminRegister = () => {
    console.log('✅ Admin registered:', response.data);
   const username = response.data?.data?.username || response.data?.username || 'Admin';
   toast.success(`Admin ${username} registered successfully`);
+  QueryClient.invalidateQueries({
+        queryKey: ['dashboard'] // Invalidates all dashboard queries
+      });
+      
+      console.log('🗑️ [TanStack] Dashboard cache invalidated');
 },
 
     onError: (error) => {
@@ -34,8 +38,6 @@ export const useAdminRegister = () => {
     },
   });
 };
-
-
 
 export const useLogin = () => {
   const login = useAuthStore((s) => s.login);
@@ -59,7 +61,6 @@ export const useLogin = () => {
       // STEP 2: Redirect based on role
       // ========================================
       console.log(!data.user)
-  
       if (
   data.accessToken &&
   (data.user.role === 'admin' || data.user.role === 'superadmin')
@@ -67,7 +68,6 @@ export const useLogin = () => {
   console.log("this runs")
   navigate('/admin/dashboard');  //url refresh huncha
 }
-
     },
 
    onError: (error) => {
@@ -86,9 +86,6 @@ export const useLogin = () => {
 },
   });
 };
-
-
-
 
 
 // ========================================

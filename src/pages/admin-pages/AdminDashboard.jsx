@@ -1,112 +1,3 @@
-// import { useLogout } from "../../hooks/useAuth";
-// import useAuthStore from "../../store/authStore";
-
-
-// export default function AdminDashboard() {
-//   // Get user data from Zustand store
-//   const { user } = useAuthStore();
-  
-//   // Get logout function
-//   const { mutate: logout, isPending } = useLogout();
-
-//   console.log('👤 AdminDashboard: Current user:', user);
-
-//   return (
-//     <div style={{ padding: '40px' }}>
-//       {/* HEADER */}
-//       <div style={{ 
-//         display: 'flex', 
-//         justifyContent: 'space-between', 
-//         alignItems: 'center',
-//         marginBottom: '30px'
-//       }}>
-//         <h1>Admin Dashboard</h1>
-        
-//         {/* USER INFO */}
-//         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-//           <div>
-//             <div style={{ fontSize: '14px', color: '#666' }}>Logged in as:</div>
-//             <div style={{ fontWeight: 'bold' }}>
-//               {user?.username} ({user?.role})
-//             </div>
-//           </div>
-          
-//           {/* LOGOUT BUTTON */}
-//           <button
-//             onClick={() => {
-//               console.log('🚪 Logout button clicked');
-//               logout();
-//             }}
-//             disabled={isPending}
-//             style={{
-//               padding: '10px 20px',
-//               backgroundColor: '#dc3545',
-//               color: 'white',
-//               border: 'none',
-//               borderRadius: '4px',
-//               cursor: isPending ? 'not-allowed' : 'pointer'
-//             }}
-//           >
-//             {isPending ? 'Logging out...' : 'Logout'}
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* DASHBOARD CONTENT */}
-//       <div style={{ 
-//         backgroundColor: 'white', 
-//         padding: '30px', 
-//         borderRadius: '8px',
-//         boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
-//       }}>
-//         <h2>Welcome to Admin Panel!</h2>
-//         <p style={{ color: '#666', marginTop: '10px' }}>
-//           You are logged in as <strong>{user?.role}</strong>
-//         </p>
-
-//         {/* STATS CARDS */}
-//         <div style={{ 
-//           display: 'grid', 
-//           gridTemplateColumns: 'repeat(3, 1fr)', 
-//           gap: '20px',
-//           marginTop: '30px'
-//         }}>
-//           <div style={{ 
-//             padding: '20px', 
-//             backgroundColor: '#f8f9fa', 
-//             borderRadius: '8px' 
-//           }}>
-//             <h3 style={{ margin: 0, fontSize: '18px' }}>Total Posts</h3>
-//             <p style={{ fontSize: '32px', fontWeight: 'bold', margin: '10px 0' }}>42</p>
-//           </div>
-
-//           <div style={{ 
-//             padding: '20px', 
-//             backgroundColor: '#f8f9fa', 
-//             borderRadius: '8px' 
-//           }}>
-//             <h3 style={{ margin: 0, fontSize: '18px' }}>Active Users</h3>
-//             <p style={{ fontSize: '32px', fontWeight: 'bold', margin: '10px 0' }}>128</p>
-//           </div>
-
-//           <div style={{ 
-//             padding: '20px', 
-//             backgroundColor: '#f8f9fa', 
-//             borderRadius: '8px' 
-//           }}>
-//             <h3 style={{ margin: 0, fontSize: '18px' }}>Comments</h3>
-//             <p style={{ fontSize: '32px', fontWeight: 'bold', margin: '10px 0' }}>356</p>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
 import React from 'react';
 import {
   Users,
@@ -123,6 +14,8 @@ import {
 
 import useAuthStore from '../../store/authStore';
 import { Link } from 'react-router-dom';
+import { useAdminDashboard, useSuperAdminDashboard } from '../../api/useDashboard';
+import LoadingFallback from '../../components/LoadingFallback';
 
 // Mock data for charts
 
@@ -156,7 +49,22 @@ const StatCard = ({ title, value, change, icon: Icon, trend }) => {
 
 // SuperAdmin Dashboard View
 const SuperAdminDashboard = ({ user }) => {
-  return (
+   const { data, isLoading, isError, error, refetch } = useSuperAdminDashboard();
+     // Show loading spinner
+  if (isLoading) {
+    return <LoadingFallback/>;
+  }
+
+  // Handle errors
+  if (isError) {
+    return (
+      <div>
+        <p>Error: {error.message}</p>
+        <button onClick={() => refetch()}>Retry</button>
+      </div>
+    );
+  }
+   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white shadow-lg">
@@ -167,14 +75,14 @@ const SuperAdminDashboard = ({ user }) => {
         <p className="text-blue-100">
           Welcome back, {user?.username}! You have full system access.
         </p>
-        
+         <Link to={"/admin/testing"}>click here</Link>
       </div>
       
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="Total Students"
-          value="1,247"
+          title="Total Admin"
+          value={data.totalAdmins}
           change="+12%"
           icon={Users}
           trend="up"
@@ -201,6 +109,30 @@ const SuperAdminDashboard = ({ user }) => {
           trend="up"
         />
       </div>
+         <div className="card">
+        <h2>All Admins ({data.admins.count})</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.admins.list.map((admin) => (
+              <tr key={admin._id}>
+                <td>{admin.name}</td>
+                <td>{admin.email}</td>
+                <td>{admin.status}</td>
+                <td>{new Date(admin.createdAt).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
 
       {/* System Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -276,6 +208,9 @@ const SuperAdminDashboard = ({ user }) => {
 
 // Regular Admin Dashboard View
 const RegularAdminDashboard = ({ user }) => {
+  const { data, isLoading, isError, error } = useAdminDashboard();
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error: {error.message}</div>;
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
@@ -289,7 +224,7 @@ const RegularAdminDashboard = ({ user }) => {
         </p>
         <Link to={"/admin/testing"}>click here</Link>
       </div>
-
+     
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
@@ -297,7 +232,6 @@ const RegularAdminDashboard = ({ user }) => {
           value="1,247"
           change="+12%"
           icon={Users}
-          trend="up"
         />
         <StatCard
           title="Active Courses"
@@ -321,7 +255,12 @@ const RegularAdminDashboard = ({ user }) => {
           trend="down"
         />
       </div>
-
+      
+       {/* Total Admins Card */}
+      <div className="card">
+        <h2>Total Admins</h2>
+        <p className="text-4xl">{data.totalAdmins}</p>
+      </div>
       {/* Recent Activity */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
         <div className="p-6 border-b border-gray-200">
@@ -358,7 +297,7 @@ export default function AdminDashboard() {
   const { user } = useAuthStore();
 
   console.log('👤 AdminDashboard: Current user:', user);
-
+  
   // Render based on role
   if (user?.role === 'super_admin') {
     return <SuperAdminDashboard user={user} />;
