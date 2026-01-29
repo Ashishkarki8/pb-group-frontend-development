@@ -20,13 +20,13 @@ import {
 export const services = [
   {
     id: 1,
-    title: "Research Services",
+    title: "Research Services", 
     slug: "research-services",
-    shortDescription:
+    shortDescription:  //in cards
       "Expert research services using qualitative and quantitative approaches to uncover actionable insights and market trends, helping businesses make informed decisions and stay ahead in a competitive landscape.",
-    subtitle:
+    subtitle:  // just below the title shown in the details page
       "Expert research services using qualitative and quantitative approaches. Drive growth with data-driven insights and expert analysis.",
-    description:
+    description:  //its for the service details page
       "Our research services combine advanced methodologies and deep industry expertise to deliver actionable insights that drive business growth. We specialize in both qualitative and quantitative research, offering robust data collection, analysis, and tailored solutions that address each client's unique goals. From market and consumer studies to impact assessments, our experienced team ensures precision, transparency, and measurable results at every stage. With a commitment to excellence and industry best practices, we empower organizations to make informed decisions, enhance performance, and gain a competitive edge in their markets.",
     
     // Bullet points for different research survey types

@@ -27,7 +27,7 @@ export const useSuperAdminDashboard = () => {
     gcTime: 5 * 60 * 1000, // 5 minutes - keep in cache (formerly cacheTime)
     
     // 🔄 Refetch strategies
-    refetchOnWindowFocus: false, // Don't refetch on tab switch
+    refetchOnWindowFocus: false, // Don't refetch on tab switch even in stale or refresh
     refetchOnMount: false, // Don't refetch if data exists means even i change the url in stale state the api wont hit if false , and in true if i am in stale and go back to admin dashboard api hits
     refetchOnReconnect: true, // Refetch on internet reconnect
     

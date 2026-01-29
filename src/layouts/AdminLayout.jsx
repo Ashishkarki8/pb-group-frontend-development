@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
-  Users,
   BookOpen,
   UserCheck,
   FileBarChart,
@@ -10,26 +9,62 @@ import {
   Search,
   Bell,
   ChevronDown,
+  ChevronRight,
   Menu,
   X,
-  LogOut
+  LogOut,
+  Image,
+  LayoutGrid,
+  ShieldUser,
+  PenLine,
+  FileClock,
+  HeartHandshake,
+  FileText,
+  Home
 } from 'lucide-react';
 import { useLogout } from '../hooks/useAuth';
 import useAuthStore from '../store/authStore';
 
-
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState({});
   const { user } = useAuthStore();
   const { mutate: logout, isPending } = useLogout();
+  const location = useLocation();
+
+  // Toggle dropdown section
+  const toggleSection = (sectionId) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId]
+    }));
+  };
 
   // Menu items based on role
   const getMenuItems = () => {
     const baseItems = [
-      { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
-      { id: 'students', icon: Users, label: 'Students', path: '/admin/students' },
+      { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
+      { id: 'admins', icon: ShieldUser, label: 'Admins', path: '/admin/admins' },
+      { id: 'banners', icon: Image, label: 'Banner', path: '/admin/banners' },
+      { id: 'services', icon: LayoutGrid, label: 'Services', path: '/admin/services' },
       { id: 'courses', icon: BookOpen, label: 'Courses', path: '/admin/courses' },
-      { id: 'reports', icon: FileBarChart, label: 'Reports', path: '/admin/reports' },
+      { id: 'blogs', icon: PenLine, label: 'Blogs', path: '/admin/blogs' },
+      { id: 'works', icon: FileClock, label: 'Works', path: '/admin/past-works' },
+      { id: 'partners', icon: HeartHandshake, label: 'Partners', path: '/admin/clients-partners' },
+      
+      // CMS Management Dropdown
+      {
+        id: 'cms',
+        icon: FileText,
+        label: 'CMS Management',
+        type: 'dropdown',
+        children: [
+          { id: 'homepage', icon: Home, label: 'Homepage', path: '/admin/cms/homepage' },
+          // Add more pages here in the future
+          // { id: 'aboutpage', icon: Info, label: 'About Page', path: '/admin/cms/about-page' },
+          // { id: 'contactpage', icon: Mail, label: 'Contact Page', path: '/admin/cms/contact-page' },
+        ]
+      },
     ];
 
     // Superadmin gets additional menu items
@@ -53,6 +88,61 @@ const AdminLayout = () => {
 
   const menuItems = getMenuItems();
 
+  // Check if the current path matches the menu item path
+  const isActive = (path) => {
+    if (!path) return false;
+    return location.pathname === path || location.pathname.startsWith(path + '/');
+  };
+
+  // Render menu item (recursive for nested dropdowns)
+  const renderMenuItem = (item, level = 0) => {
+    if (item.type === 'dropdown') {
+      const isExpanded = expandedSections[item.id];
+      
+      return (
+        <div key={item.id}>
+          <button
+            onClick={() => toggleSection(item.id)}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors duration-200 text-slate-300 hover:text-white hover:bg-slate-700 ${
+              level > 0 ? 'pl-8' : ''
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              {item.icon && <item.icon size={20} />}
+              <span className="font-medium">{item.label}</span>
+            </div>
+            {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          </button>
+          
+          {isExpanded && item.children && (
+            <div className="mt-1 space-y-1">
+              {item.children.map(child => renderMenuItem(child, level + 1))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Regular menu item with link
+    const active = isActive(item.path);
+    return (
+      <Link
+        key={item.id}
+        to={item.path}
+        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors duration-200 ${
+          level > 0 ? 'pl-12' : ''
+        } ${
+          active
+            ? 'bg-blue-600 text-white shadow-lg'
+            : 'text-slate-300 hover:text-white hover:bg-slate-700'
+        }`}
+      >
+        {item.icon && <item.icon size={20} />}
+        <span className="font-medium">{item.label}</span>
+      </Link>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex">
@@ -69,7 +159,7 @@ const AdminLayout = () => {
           fixed top-0 left-0 h-full bg-slate-800 text-white z-50 transition-transform duration-300
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0 lg:static lg:z-auto
-          w-64 flex-shrink-0
+          w-64 flex-shrink-0 flex flex-col
         `}>
           {/* Logo & Close Button */}
           <div className="flex items-center justify-between p-6 border-b border-slate-700">
@@ -87,18 +177,9 @@ const AdminLayout = () => {
             </button>
           </div>
 
-          {/* Navigation */}
-          <nav className="p-4 space-y-2 flex-1">
-            {menuItems.map((item) => (
-              <a
-                key={item.id}
-                href={item.path}
-                className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors duration-200 text-slate-300 hover:text-white hover:bg-slate-700"
-              >
-                <item.icon size={20} />
-                <span className="font-medium">{item.label}</span>
-              </a>
-            ))}
+          {/* Navigation - Scrollable */}
+          <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
+            {menuItems.map((item) => renderMenuItem(item))}
           </nav>
 
           {/* User Section */}
@@ -177,3 +258,4 @@ const AdminLayout = () => {
 };
 
 export default AdminLayout;
+
