@@ -1,0 +1,152 @@
+Now create your first FEATURE BRANCH:
+# Show all local branches
+git branch
+
+# Show all remote branches
+git branch -r
+
+# Show ALL branches (local + remote)
+git branch -a
+# now create and switch
+# Create and switch to a new branch
+git checkout -b feature/setup-ci-cd
+Branch naming convention:
+feature/ → new features
+bugfix/ → fixing bugs
+hotfix/ → urgent production fixes
+chore/ → setup, config, docs
+
+
+
+
+
+
+
+# 1. Start fresh from the day
+git checkout main       //To switch to the main branch
+git pull origin main    
+
+# 2. Create feature branch
+git checkout -b feature/your-feature
+
+# 3. Make changes, commit
+git add .
+git commit -m "feat: your descriptive message"
+
+# 4. Push branch
+git push origin feature/your-feature
+
+# 5. Create PR on GitHub
+# 6. Wait for review & merge
+# 7. Delete branch (optional)
+git branch -d feature/your-feature
+
+
+
+
+# BAD - adds EVERYTHING (might include junk)
+git add .  ← Avoid in real work!
+
+# GOOD - add specific files
+git add frontend/src/App.jsx
+git add frontend/src/components/Login.jsx
+
+# ALSO GOOD - add all changes in a folder
+git add frontend/src/  # All changes in src folder
+
+# BEST - check what you're adding first
+git status  # See exactly what files changed
+git add file1.js file2.js  # Add only what you need
+
+
+
+
+
+GITHUB PULL REQUEST PAGE
+═══════════════════════════
+
+feature/login-button  →  main
+                      ↓  PR = Pull Request = "Hey team, I have code ready, please pull it into main!"
+            [Merge Pull Request]
+        ┌──────────────────────┐
+        │  ▼ Confirm merge     │
+        │  ▼ Delete branch     │
+        └──────────────────────┘
+                      ↓
+              main updated!
+
+
+
+# Admin tests your branch
+git checkout feature/login-button
+npm test  # Check if works
+git checkout main
+git merge feature/login-button
+git push origin main
+But 99% of time: Admin just clicks "Merge" on GitHub! ✅
+
+
+
+
+
+TIMELINE                    YOU                          TEAMMATE (Sarah)
+═══════════════════════════════════════════════════════════════════════
+
+9:00 AM         git checkout -b feature/login-button
+                [Start coding login page]
+                ↓
+9:30 AM                                          git checkout -b feature/fix-header
+                                                  [Code changes]
+                                                  git add .
+                                                  git commit -m "fix: update header"
+                                                  git push origin feature/fix-header
+                ↓                                 ↓
+10:00 AM        [Still coding login]            Admin MERGES Sarah's PR to main
+                ↓                                 ↓
+10:15 AM        git status                      ✅ main updated!
+                modified: Login.jsx              
+                (NOT committed yet!)
+                
+❓ WHAT DO YOU DO? → Continue coding? Pull main? Commit first?
+
+
+
+
+# 1. SAVE YOUR PROGRESS (even if incomplete!)
+git add .                          # Stage your changes
+git commit -m "wip: login form UI in progress"  
+# "wip" = Work In Progress - perfectly acceptable!
+
+# 2. GET THE LATEST CODE
+git checkout main                 # Switch to main
+git pull origin main              # Get Sarah's merged code
+git checkout feature/login-button # Back to your branch
+
+# 3. MERGE MAIN INTO YOUR BRANCH
+git merge main                    # Bring Sarah's changes into your branch
+# (Fix any conflicts if they appear)
+
+# 4. CONTINUE CODING
+# Now you have YOUR code + LATEST main code together!
+
+# 5. WHEN FINISHED
+git add .
+git commit -m "feat: complete login page with validation"
+git push origin feature/login-button
+
+visual representation
+YOUR BRANCH (feature/login)              MAIN BRANCH
+──────────────────────                  ────────────
+
+Start:     A ────────────── B (Sarah's merge)
+           │                    ↑
+           │                    │
+Now:       A ── Your code ──┐   │
+                            ↓   │
+Merge:     A ── Your code ──┼───┘
+                            │
+Final:     A ── Your code ──┴── B (Sarah's code too!)
+                
+✅ You have YOUR new feature + SARAH'S new feature
+✅ No conflicts discovered late
+✅ Can test both together before PR

@@ -15,7 +15,7 @@ import {
 import useAuthStore from '../../store/authStore';
 import { Link } from 'react-router-dom';
 import { useAdminDashboard, useSuperAdminDashboard } from '../../api/useDashboard';
-import LoadingFallback from '../../components/LoadingFallback';
+import LoadingFallback from '../../components/common/LoadingFallback';
 
 // Mock data for charts
 

@@ -4,12 +4,14 @@ import Topbar from "../components/Topbar";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import StickyContactButton from "../components/StickyContactButton ";
-import ScrollToTop from "../components/ScrollToTop";
+import GenXCodeItHomepage from "../pages/GenXCodeItHomepage";
+
 
 
 const MainLayout = () => {
   return (
     <div>
+    {/* <GenXCodeItHomepage></GenXCodeItHomepage> */}
       <Topbar />
       <Navbar />
       <StickyContactButton />

@@ -60,7 +60,7 @@ const PosterModal = ({ isOpen, onClose }) => {
             target="_blank"
             rel="noopener noreferrer"
             className="block relative group"
-            onClick={(e) => {
+            onClick={() => {
               // Optional: Track click analytics here
               console.log('Banner clicked:', banner.link);
             }}

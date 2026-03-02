@@ -1,30 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  AlertCircle,
+  ChevronDown,
+  Eye, EyeOff,
+  FileText,
+  Globe,
+  Grid3x3,
+  Home,
+  Plus,
+  Save,
+  Settings,
+  Sparkles,
+  Trash2,
+  Upload,
+  X
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useConfirm } from '../../hooks/useConfirm';
-import {
-  Plus, X, Save, AlertCircle, FileText, Sparkles, Globe,
-  Settings, Home, ChevronDown, Upload, Eye, EyeOff,
-  BarChart3, Smartphone, TrendingUp, Monitor, Grid3x3, GraduationCap
-} from 'lucide-react';
+import { getAvailableIcons, getIconComponent } from '../../utils/iconMapping';
 
 // ============================================
 // ZOD SCHEMA
 // ============================================
+
+const whatsIncludedItemSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  iconName: z.string().min(1, "Icon is required"),
+});
 
 const serviceSchema = z.object({
   title: z.string().min(1, "Title is required"),
   slug: z.string()
     .min(1, "Slug is required")
     .regex(/^[a-z0-9-]+$/, "Use lowercase letters, numbers, and hyphens only"),
-  subtitle: z.string().optional(),
-  shortDescription: z.string()
+  subtitle: z.string().min(50, "Must be at least 50 characters"),
+  cardDescription: z.string()
     .min(50, "Must be at least 50 characters"),
   description: z.string().min(1, "Description is required"),
   iconName: z.string().min(1, "Icon selection is required"),
-  heroImage: z.any().optional(), // File object
+  heroImage: z.instanceof(File).nullable(),
   researchTypes: z.array(z.string()).default([]),
+  whatsIncluded: z.array(whatsIncludedItemSchema).default([]),
   isPublished: z.boolean().default(false),
   showOnHomepage: z.boolean().default(true),
   displayOrder: z.number().default(0),
@@ -36,45 +55,38 @@ const serviceSchema = z.object({
 });
 
 // ============================================
-// LUCIDE ICONS
-// ============================================
-
-const LUCIDE_ICONS = [
-  { name: 'BarChart3', component: BarChart3, label: 'Chart' },
-  { name: 'Smartphone', component: Smartphone, label: 'Mobile' },
-  { name: 'TrendingUp', component: TrendingUp, label: 'Analytics' },
-  { name: 'Monitor', component: Monitor, label: 'Computer' },
-  { name: 'Grid3x3', component: Grid3x3, label: 'Dashboard' },
-  { name: 'GraduationCap', component: GraduationCap, label: 'Training' }
-];
-
-const getIconComponent = (iconName) => {
-  const icon = LUCIDE_ICONS.find(i => i.name === iconName);
-  return icon ? icon.component : BarChart3;
-};
-
-// ============================================
 // COMPONENT
 // ============================================
 
 const CreateServiceForm = ({ onClose, onSubmit, editingService = null }) => {
+  console.log("editingService",editingService)
   const { confirm } = useConfirm();
   const [showIconPicker, setShowIconPicker] = useState(false);
+  const [showIncludedIconPicker, setShowIncludedIconPicker] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [researchTypeInput, setResearchTypeInput] = useState('');
   const [keywordInput, setKeywordInput] = useState('');
+  
+  // State for What's Included form
+  const [includedItemForm, setIncludedItemForm] = useState({
+    title: '',
+    description: '',
+    iconName: 'Users'
+  });
+  const [editingIncludedIndex, setEditingIncludedIndex] = useState(null);
 
   const { control, handleSubmit, setValue, watch, reset, formState: { errors, isSubmitting, isDirty } } = useForm({
     resolver: zodResolver(serviceSchema),
     defaultValues: {
       title: '',
       slug: '',
+      cardDescription: '',
       subtitle: '',
-      shortDescription: '',
       description: '',
       iconName: 'BarChart3',
       heroImage: null,
       researchTypes: [],
+      whatsIncluded: [],
       isPublished: false,
       showOnHomepage: true,
       displayOrder: 0,
@@ -94,18 +106,18 @@ const CreateServiceForm = ({ onClose, onSubmit, editingService = null }) => {
   
   useEffect(() => {
     if (editingService) {
-      // ✅ Extract image URL from heroImage.url structure
       const existingImageUrl = editingService.heroImage?.url || editingService.heroImageUrl || null;
       
       reset({
         title: editingService.title || '',
         slug: editingService.slug || '',
         subtitle: editingService.subtitle || '',
-        shortDescription: editingService.shortDescription || '',
+        cardDescription: editingService.cardDescription || '',
         description: editingService.description || '',
         iconName: editingService.iconName || 'BarChart3',
-        heroImage: null, // Start with no file (user can upload new one)
+        heroImage: null,
         researchTypes: editingService.researchTypes || [],
+        whatsIncluded: editingService.whatsIncluded || [],
         isPublished: editingService.isPublished || false,
         showOnHomepage: editingService.showOnHomepage !== undefined ? editingService.showOnHomepage : true,
         displayOrder: editingService.displayOrder || 0,
@@ -116,13 +128,88 @@ const CreateServiceForm = ({ onClose, onSubmit, editingService = null }) => {
         }
       });
       
-      // ✅ Set image preview from existing service
       setImagePreview(existingImageUrl);
     }
   }, [editingService, reset]);
 
   // ============================================
-  // HANDLERS
+  // HANDLERS - What's Included
+  // ============================================
+
+  const addIncludedItem = () => {
+    if (!includedItemForm.title.trim() || !includedItemForm.description.trim()) {
+      alert('Please fill in both title and description');
+      return;
+    }
+
+    const currentItems = watchedValues.whatsIncluded || [];
+    
+    if (editingIncludedIndex !== null) {
+      // Update existing item
+      const updatedItems = [...currentItems];
+      updatedItems[editingIncludedIndex] = {
+        title: includedItemForm.title.trim(),
+        description: includedItemForm.description.trim(),
+        iconName: includedItemForm.iconName
+      };
+      setValue('whatsIncluded', updatedItems, { shouldDirty: true });
+      setEditingIncludedIndex(null);
+    } else {
+      // Add new item
+      setValue('whatsIncluded', [
+        ...currentItems,
+        {
+          title: includedItemForm.title.trim(),
+          description: includedItemForm.description.trim(),
+          iconName: includedItemForm.iconName
+        }
+      ], { shouldDirty: true });
+    }
+
+    // Reset form
+    setIncludedItemForm({
+      title: '',
+      description: '',
+      iconName: 'Users'
+    });
+  };
+
+  const editIncludedItem = (index) => {
+    const item = watchedValues.whatsIncluded[index];
+    setIncludedItemForm({
+      title: item.title,
+      description: item.description,
+      iconName: item.iconName
+    });
+    setEditingIncludedIndex(index);
+  };
+
+  const removeIncludedItem = (index) => {
+    const currentItems = watchedValues.whatsIncluded || [];
+    setValue('whatsIncluded', currentItems.filter((_, i) => i !== index), { shouldDirty: true });
+    
+    // Reset editing state if we're removing the item being edited
+    if (editingIncludedIndex === index) {
+      setIncludedItemForm({
+        title: '',
+        description: '',
+        iconName: 'Users'
+      });
+      setEditingIncludedIndex(null);
+    }
+  };
+
+  const cancelEditingIncluded = () => {
+    setIncludedItemForm({
+      title: '',
+      description: '',
+      iconName: 'Users'
+    });
+    setEditingIncludedIndex(null);
+  };
+
+  // ============================================
+  // HANDLERS - Original
   // ============================================
 
   const handleClose = async () => {
@@ -153,28 +240,25 @@ const CreateServiceForm = ({ onClose, onSubmit, editingService = null }) => {
     });
 
     if (result) {
-      // ✅ Prepare service data
       const serviceData = {
         title: data.title,
         slug: data.slug,
         subtitle: data.subtitle || '',
-        shortDescription: data.shortDescription,
+        cardDescription: data.cardDescription,
         description: data.description,
         iconName: data.iconName,
-        heroImage: data.heroImage, // This is the File object or null
+        heroImage: data.heroImage,
         researchTypes: data.researchTypes,
+        whatsIncluded: data.whatsIncluded,
         isPublished: data.isPublished,
         showOnHomepage: data.showOnHomepage,
         displayOrder: data.displayOrder,
         seo: data.seo
       };
       
-      // ✅ Call onSubmit with correct parameters based on mode
       if (editingService) {
-        // Update mode: pass (serviceId, serviceData)
         onSubmit(editingService._id, serviceData);
       } else {
-        // Create mode: pass (serviceData)
         onSubmit(serviceData);
       }
     }
@@ -223,10 +307,8 @@ const CreateServiceForm = ({ onClose, onSubmit, editingService = null }) => {
         return;
       }
       
-      // ✅ Set the File object in the form
       setValue('heroImage', file, { shouldDirty: true });
       
-      // ✅ Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -317,58 +399,73 @@ const CreateServiceForm = ({ onClose, onSubmit, editingService = null }) => {
             </p>
           )}
         </div>
-
-        {/* Subtitle */}
+          
+        {/* Service Card Description */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Service Card Content
-          </label>
-          <Controller
-            name="subtitle"
-            placeholder="text for the service cards"
-            control={control}
-            render={({ field }) => (
-              <input
-                {...field}
-                type="text"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="A short tagline for your service"
-              />
-            )}
-          />
-        </div>
-
-        {/* Short Description */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Tile Description <span className="text-red-500">*</span>
+            Service Card Description<span className="text-red-500">*</span>
             <span className="text-xs text-gray-500 ml-2">(Min 50 characters)</span>
           </label>
           <Controller
-            name="shortDescription"
+            name="cardDescription"
+            control={control}
+            render={({ field }) => (
+              <textarea
+                {...field}
+                rows={5}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                  errors.cardDescription ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Brief description shown on service cards home page"
+              />
+            )}
+          />
+          <div className="mt-1 flex justify-between text-xs">
+            <div>
+              {errors.cardDescription && (
+                <p className="text-red-600 flex items-center gap-1">
+                  <AlertCircle size={14} />
+                  {errors.cardDescription.message}
+                </p>
+              )}
+            </div>
+            <p className={`${(watchedValues.cardDescription?.length || 0) < 50 ? 'text-red-500' : 'text-gray-500'}`}>
+              {watchedValues.cardDescription?.length || 0} 
+            </p>
+          </div>
+        </div>
+
+        {/* Subtitle Description */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Title Description <span className="text-red-500">*</span>
+            <span className="text-xs text-gray-500 ml-2">(Min 50 characters)</span>
+          </label>
+          <Controller
+            name="subtitle"
             control={control}
             render={({ field }) => (
               <textarea
                 {...field}
                 rows={3}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                  errors.shortDescription ? 'border-red-500' : 'border-gray-300'
+                  errors.subtitle ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="Brief description shown on service cards..."
+                placeholder="Text for the service title introduction in service details page"
               />
             )}
           />
           <div className="mt-1 flex justify-between text-xs">
             <div>
-              {errors.shortDescription && (
+              {errors.subtitle && (
                 <p className="text-red-600 flex items-center gap-1">
                   <AlertCircle size={14} />
-                  {errors.shortDescription.message}
+                  {errors.subtitle.message}
                 </p>
               )}
             </div>
-            <p className={`${(watchedValues.shortDescription?.length || 0) < 50 ? 'text-red-500' : 'text-gray-500'}`}>
-              {watchedValues.shortDescription?.length || 0} / 50 characters
+            <p className={`${(watchedValues.subtitle?.length || 0) < 50 ? 'text-red-500' : 'text-gray-500'}`}>
+              {watchedValues.subtitle?.length || 0}
             </p>
           </div>
         </div>
@@ -384,7 +481,7 @@ const CreateServiceForm = ({ onClose, onSubmit, editingService = null }) => {
             render={({ field }) => (
               <textarea
                 {...field}
-                rows={5}
+                rows={9}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
                   errors.description ? 'border-red-500' : 'border-gray-300'
                 }`}
@@ -429,7 +526,7 @@ const CreateServiceForm = ({ onClose, onSubmit, editingService = null }) => {
             {showIconPicker && (
               <div className="absolute z-10 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
                 <div className="p-2 grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
-                  {LUCIDE_ICONS.map((icon) => (
+                  {getAvailableIcons().map((icon) => (
                     <button
                       key={icon.name}
                       type="button"
@@ -454,7 +551,7 @@ const CreateServiceForm = ({ onClose, onSubmit, editingService = null }) => {
         {/* Hero Image Upload */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Hero Image
+            Service Image
             {editingService && imagePreview && !watchedValues.heroImage && (
               <span className="text-xs text-green-600 ml-2">(Current image will be kept)</span>
             )}
@@ -493,6 +590,154 @@ const CreateServiceForm = ({ onClose, onSubmit, editingService = null }) => {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* What's Included Section */}
+      <div className="space-y-4 pt-6 border-t border-gray-200">
+        <h4 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <Grid3x3 size={20} className="text-blue-600" />
+          What's Included
+        </h4>
+
+        {/* Add/Edit Form */}
+        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Item Title
+            </label>
+            <input
+              type="text"
+              value={includedItemForm.title}
+              onChange={(e) => setIncludedItemForm({ ...includedItemForm, title: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., Qualitative & Quantitative Approach"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Description
+            </label>
+            <textarea
+              value={includedItemForm.description}
+              onChange={(e) => setIncludedItemForm({ ...includedItemForm, description: e.target.value })}
+              rows={2}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="Brief description of what's included..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Icon
+            </label>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowIncludedIconPicker(showIncludedIconPicker === null ? 0 : null)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 flex items-center justify-between bg-white hover:bg-gray-50"
+              >
+                <div className="flex items-center gap-2">
+                  {React.createElement(getIconComponent(includedItemForm.iconName), { size: 20 })}
+                  <span className="font-mono text-sm">{includedItemForm.iconName}</span>
+                </div>
+                <ChevronDown size={16} className="text-gray-400" />
+              </button>
+              
+              {showIncludedIconPicker === 0 && (
+                <div className="absolute z-10 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+                  <div className="p-2 grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                    {getAvailableIcons().map((icon) => (
+                      <button
+                        key={icon.name}
+                        type="button"
+                        onClick={() => {
+                          setIncludedItemForm({ ...includedItemForm, iconName: icon.name });
+                          setShowIncludedIconPicker(null);
+                        }}
+                        className={`p-3 rounded-lg border-2 hover:border-blue-500 transition-colors flex flex-col items-center gap-1 ${
+                          includedItemForm.iconName === icon.name ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                        }`}
+                      >
+                        {React.createElement(icon.component, { size: 24 })}
+                        <span className="text-xs text-gray-600">{icon.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={addIncludedItem}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+            >
+              <Plus size={20} />
+              {editingIncludedIndex !== null ? 'Update Item' : 'Add Item'}
+            </button>
+            {editingIncludedIndex !== null && (
+              <button
+                type="button"
+                onClick={cancelEditingIncluded}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Display Added Items */}
+        {watchedValues.whatsIncluded?.length > 0 && (
+          <div className="space-y-3">
+            {watchedValues.whatsIncluded.map((item, index) => (
+              <div
+                key={index}
+                className={`p-4 border-2 rounded-lg ${
+                  editingIncludedIndex === index ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    {React.createElement(getIconComponent(item.iconName), { size: 24, className: 'text-blue-600' })}
+                  </div>
+                  <div className="flex-1">
+                    <h5 className="font-semibold text-gray-900">{item.title}</h5>
+                    <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => editIncludedItem(index)}
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      title="Edit"
+                    >
+                      <FileText size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeIncludedItem(index)}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Delete"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {errors.whatsIncluded && (
+          <p className="text-sm text-red-600 flex items-center gap-1">
+            <AlertCircle size={14} />
+            {errors.whatsIncluded.message}
+          </p>
+        )}
       </div>
 
       {/* Research Types */}

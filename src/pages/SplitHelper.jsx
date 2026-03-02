@@ -1,466 +1,692 @@
-// import React, { useState } from 'react';
-// import {
-//   LayoutDashboard,
-//   BookOpen,
-//   UserCheck,
-//   FileBarChart,
-//   Settings,
-//   Search,
-//   Bell,
-//   ChevronDown,
-//   ChevronRight,
-//   Menu,
-//   X,
-//   LogOut,
-//   Image,
-//   LayoutGrid,
-//   Shield,
-//   FileText,
-//   Home,
-//   Briefcase,
-//   Info
-// } from 'lucide-react';
 
-// const AdminLayout = () => {
-//   const [sidebarOpen, setSidebarOpen] = useState(false);
-//   const [expandedSections, setExpandedSections] = useState({});
-//   const [currentPath, setCurrentPath] = useState('/admin/dashboard');
-  
-//   const user = {
-//     username: 'admin',
-//     role: 'super_admin'
-//   };
-
-//   const toggleSection = (sectionId) => {
-//     setExpandedSections(prev => ({
-//       ...prev,
-//       [sectionId]: !prev[sectionId]
-//     }));
-//   };
-
-//   const getMenuItems = () => {
-//     const baseItems = [
-//       { 
-//         id: 'dashboard', 
-//         icon: LayoutDashboard, 
-//         label: 'Dashboard', 
-//         path: '/admin/dashboard' 
-//       },
-//       { 
-//         id: 'admins', 
-//         icon: Shield, 
-//         label: 'Admins', 
-//         path: '/admin/admins' 
-//       },
-//       {
-//         id: 'cms',
-//         icon: FileText,
-//         label: 'CMS Management',
-//         type: 'dropdown',
-//         children: [
-//           {
-//             id: 'homepage',
-//             label: 'Homepage Sections',
-//             type: 'dropdown',
-//             children: [
-//               { id: 'hero', icon: Home, label: 'Hero Section', path: '/admin/cms/hero' },
-//               { id: 'services', icon: Briefcase, label: 'Services Section', path: '/admin/cms/services' },
-//               { id: 'about', icon: Info, label: 'About Section', path: '/admin/cms/about' }
-//             ]
-//           }
-//         ]
-//       },
-//       { 
-//         id: 'banners', 
-//         icon: Image, 
-//         label: 'Banner', 
-//         path: '/admin/banners' 
-//       },
-//       { 
-//         id: 'services', 
-//         icon: LayoutGrid, 
-//         label: 'Services', 
-//         path: '/admin/services' 
-//       },
-//       { 
-//         id: 'courses', 
-//         icon: BookOpen, 
-//         label: 'Courses', 
-//         path: '/admin/courses' 
-//       },
-//       { 
-//         id: 'reports', 
-//         icon: FileBarChart, 
-//         label: 'Reports', 
-//         path: '/admin/reports' 
-//       },
-//     ];
-
-//     if (user?.role === 'super_admin') {
-//       baseItems.splice(3, 0, {
-//         id: 'teachers',
-//         icon: UserCheck,
-//         label: 'Teachers',
-//         path: '/admin/teachers'
-//       });
-//       baseItems.push({
-//         id: 'settings',
-//         icon: Settings,
-//         label: 'Settings',
-//         path: '/admin/settings'
-//       });
-//     }
-
-//     return baseItems;
-//   };
-
-//   const menuItems = getMenuItems();
-
-//   const isActive = (path) => {
-//     if (!path) return false;
-//     return currentPath === path || currentPath.startsWith(path + '/');
-//   };
-
-//   const renderMenuItem = (item, level = 0) => {
-//     if (item.type === 'dropdown') {
-//       const isExpanded = expandedSections[item.id];
-      
-//       return (
-//         <div key={item.id}>
-//           <button
-//             onClick={() => toggleSection(item.id)}
-//             className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors duration-200 text-slate-300 hover:text-white hover:bg-slate-700 ${
-//               level > 0 ? 'pl-8' : ''
-//             }`}
-//           >
-//             <div className="flex items-center space-x-3">
-//               {item.icon && <item.icon size={20} />}
-//               <span className="font-medium">{item.label}</span>
-//             </div>
-//             {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-//           </button>
-          
-//           {isExpanded && item.children && (
-//             <div className="mt-1 space-y-1">
-//               {item.children.map(child => renderMenuItem(child, level + 1))}
-//             </div>
-//           )}
-//         </div>
-//       );
-//     }
-
-//     const active = isActive(item.path);
-//     return (
-//       <button
-//         key={item.id}
-//         onClick={() => setCurrentPath(item.path)}
-//         className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors duration-200 ${
-//           level > 0 ? 'pl-12' : ''
-//         } ${
-//           active
-//             ? 'bg-blue-600 text-white shadow-lg'
-//             : 'text-slate-300 hover:text-white hover:bg-slate-700'
-//         }`}
-//       >
-//         {item.icon && <item.icon size={20} />}
-//         <span className="font-medium">{item.label}</span>
-//       </button>
-//     );
-//   };
-
-//   const getPageContent = () => {
-//     switch(currentPath) {
-//       case '/admin/cms/hero':
-//         return (
-//           <div className="bg-white rounded-lg shadow p-6">
-//             <h2 className="text-2xl font-bold mb-6">Hero Section Editor</h2>
-//             <div className="space-y-4">
-//               <div>
-//                 <label className="block text-sm font-medium mb-2">Hero Title</label>
-//                 <input type="text" className="w-full px-4 py-2 border rounded-lg" placeholder="Enter hero title" />
-//               </div>
-//               <div>
-//                 <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
-//                 <input type="text" className="w-full px-4 py-2 border rounded-lg" placeholder="Enter subtitle" />
-//               </div>
-//               <div>
-//                 <label className="block text-sm font-medium mb-2">Background Image URL</label>
-//                 <input type="text" className="w-full px-4 py-2 border rounded-lg" placeholder="Enter image URL" />
-//               </div>
-//               <div>
-//                 <label className="block text-sm font-medium mb-2">Call-to-Action Text</label>
-//                 <input type="text" className="w-full px-4 py-2 border rounded-lg" placeholder="Enter CTA text" />
-//               </div>
-//               <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-//                 Save Changes
-//               </button>
-//             </div>
-//           </div>
-//         );
-//       case '/admin/cms/services':
-//         return (
-//           <div className="bg-white rounded-lg shadow p-6">
-//             <h2 className="text-2xl font-bold mb-6">Services Section Editor</h2>
-//             <div className="space-y-4">
-//               <div>
-//                 <label className="block text-sm font-medium mb-2">Section Title</label>
-//                 <input type="text" className="w-full px-4 py-2 border rounded-lg" placeholder="Our Services" />
-//               </div>
-//               <div>
-//                 <label className="block text-sm font-medium mb-2">Section Description</label>
-//                 <textarea className="w-full px-4 py-2 border rounded-lg" rows="3" placeholder="Describe your services"></textarea>
-//               </div>
-//               <div className="border-t pt-4">
-//                 <h3 className="font-semibold mb-3">Service Items</h3>
-//                 <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-//                   + Add Service Item
-//                 </button>
-//               </div>
-//               <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-//                 Save Changes
-//               </button>
-//             </div>
-//           </div>
-//         );
-//       case '/admin/cms/about':
-//         return (
-//           <div className="bg-white rounded-lg shadow p-6">
-//             <h2 className="text-2xl font-bold mb-6">About Section Editor</h2>
-//             <div className="space-y-4">
-//               <div>
-//                 <label className="block text-sm font-medium mb-2">About Title</label>
-//                 <input type="text" className="w-full px-4 py-2 border rounded-lg" placeholder="About Us" />
-//               </div>
-//               <div>
-//                 <label className="block text-sm font-medium mb-2">About Description</label>
-//                 <textarea className="w-full px-4 py-2 border rounded-lg" rows="5" placeholder="Tell your story"></textarea>
-//               </div>
-//               <div>
-//                 <label className="block text-sm font-medium mb-2">Team Photo URL</label>
-//                 <input type="text" className="w-full px-4 py-2 border rounded-lg" placeholder="Enter image URL" />
-//               </div>
-//               <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-//                 Save Changes
-//               </button>
-//             </div>
-//           </div>
-//         );
-//       default:
-//         return (
-//           <div className="bg-white rounded-lg shadow p-6">
-//             <h2 className="text-xl font-bold mb-4">Welcome to Admin Dashboard</h2>
-//             <p className="text-gray-600 mb-4">
-//               Click on the CMS Management dropdown to see nested sections.
-//             </p>
-//             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-//               <p className="text-sm text-blue-800">
-//                 <strong>Try clicking:</strong> CMS Management → Homepage Sections → Hero Section
-//               </p>
-//             </div>
-//             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-//               <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-6 text-white">
-//                 <div className="text-3xl font-bold">24</div>
-//                 <div className="text-sm opacity-90">Total Courses</div>
-//               </div>
-//               <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-6 text-white">
-//                 <div className="text-3xl font-bold">156</div>
-//                 <div className="text-sm opacity-90">Active Students</div>
-//               </div>
-//               <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-6 text-white">
-//                 <div className="text-3xl font-bold">8</div>
-//                 <div className="text-sm opacity-90">Teachers</div>
-//               </div>
-//             </div>
-//           </div>
-//         );
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gray-50">
-//       <div className="flex">
-//         {sidebarOpen && (
-//           <div
-//             className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-//             onClick={() => setSidebarOpen(false)}
-//           />
-//         )}
-        
-//         <div className={`
-//           fixed top-0 left-0 h-full bg-slate-800 text-white z-50 transition-transform duration-300
-//           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-//           lg:translate-x-0 lg:static lg:z-auto
-//           w-64 flex-shrink-0 flex flex-col
-//         `}>
-//           <div className="flex items-center justify-between p-6 border-b border-slate-700">
-//             <div className="flex items-center space-x-3">
-//               <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-xl">
-//                 PB
-//               </div>
-//               <div>
-//                 <span className="text-xl font-bold block">Admin</span>
-//                 <span className="text-xs text-slate-400 capitalize">{user?.role}</span>
-//               </div>
-//             </div>
-//             <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1">
-//               <X size={20} />
-//             </button>
-//           </div>
-
-//           <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
-//             {menuItems.map((item) => renderMenuItem(item))}
-//           </nav>
-
-//           <div className="p-4 border-t border-slate-700">
-//             <div className="flex items-center space-x-3 px-4 py-3 bg-slate-700 rounded-lg mb-2">
-//               <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-//                 A
-//               </div>
-//               <div className="flex-1 min-w-0">
-//                 <p className="text-white font-medium truncate">{user?.username}</p>
-//                 <p className="text-slate-400 text-sm capitalize">{user?.role}</p>
-//               </div>
-//             </div>
-//             <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors duration-200 text-red-400 hover:text-red-300 hover:bg-slate-700">
-//               <LogOut size={20} />
-//               <span className="font-medium">Logout</span>
-//             </button>
-//           </div>
-//         </div>
-        
-//         <div className="flex-1 lg:ml-0 w-full">
-//           <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30">
-//             <div className="flex items-center justify-between">
-//               <div className="flex items-center space-x-4">
-//                 <button
-//                   onClick={() => setSidebarOpen(true)}
-//                   className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
-//                 >
-//                   <Menu size={20} />
-//                 </button>
-//                 <h1 className="text-2xl font-bold text-gray-900">
-//                   Super Admin Panel
-//                 </h1>
-//               </div>
-              
-//               <div className="flex items-center space-x-4">
-//                 <div className="relative hidden md:block">
-//                   <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-//                   <input
-//                     type="text"
-//                     placeholder="Search..."
-//                     className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                   />
-//                 </div>
-//                 <button className="p-2 rounded-lg hover:bg-gray-100 relative">
-//                   <Bell size={20} className="text-gray-600" />
-//                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-//                     3
-//                   </span>
-//                 </button>
-//                 <div className="flex items-center space-x-2">
-//                   <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-//                     A
-//                   </div>
-//                   <span className="text-gray-700 font-medium hidden sm:block">{user?.username}</span>
-//                   <ChevronDown size={16} className="text-gray-500" />
-//                 </div>
-//               </div>
-//             </div>
-//           </header>
-          
-//           <main className="p-6">
-//             {getPageContent()}
-//           </main>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default AdminLayout;
-
-
-
-
-//create service
-
-//service management place
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useModal } from '../../hooks/useModal.js';
 import { useConfirm } from '../../hooks/useConfirm.js';
-import CreateServiceForm from '../../components/forms/CreateServiceForm';
-import EditUserForm from '../../components/forms/EditUserForm';
+import {
+  useAllServices,
+  useCreateService,
+  useUpdateService,
+  useDeleteService,
+  useDebounce, // ✅ Import debounce hook
+} from '../../hooks/useService.js';
+import {
+  LayoutGrid, Plus, Search, Edit2, Trash2, Eye, EyeOff,
+  Loader2,
+  BarChart3,
+  Smartphone,
+  TrendingUp,
+  Monitor,
+  Grid3x3,
+  GraduationCap
+} from 'lucide-react';
+import CreateServiceForm from '../../components/forms/CreateServiceForm.jsx';
 
-
+// Icon mapping helper
+const getIconComponent = (iconName) => {
+  const icons = {
+    BarChart3: BarChart3,
+    Smartphone: Smartphone,
+    TrendingUp: TrendingUp,
+    Monitor: Monitor,
+    Grid3x3: Grid3x3,
+    GraduationCap: GraduationCap
+  };
+  return icons[iconName] || BarChart3;
+};
 
 const ServiceManagement = () => {
+  // ============================================
+  // STATE MANAGEMENT
+  // ============================================
+  
+  const [searchInput, setSearchInput] = useState(''); // ✅ Raw input state
+  const [statusFilter, setStatusFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const limit = 6;
+  
+  // ✅ Debounced search value (500ms delay)
+  const debouncedSearch = useDebounce(searchInput, 500);
+  
   const { openModal, closeModal } = useModal();
   const { confirm } = useConfirm();
 
+  // ============================================
+  // REACT QUERY HOOKS
+  // ============================================
+  
+  // Fetch all services with debounced search
+  const { data: servicesData, isLoading, isError, error } = useAllServices({ 
+    page, 
+    limit, 
+    status: statusFilter, 
+    search: debouncedSearch // ✅ Use debounced value
+  });
+
+  // Mutations
+  const createMutation = useCreateService();
+  const updateMutation = useUpdateService();
+  const deleteMutation = useDeleteService();
+
+  // Extract data
+  const services = servicesData?.services || [];
+  const pagination = servicesData?.pagination || {};
+
+  // ============================================
+  // EFFECTS - Auto reset page when filters change
+  // ============================================
+  
+  // ✅ Reset to page 1 when search or filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, statusFilter]);
+
+  // ============================================
+  // HANDLERS
+  // ============================================
+
   const handleCreateService = () => {
     openModal(
-      <CreateServiceForm onClose={closeModal} />,
+      <CreateServiceForm 
+        onClose={closeModal}
+        onSubmit={handleServiceCreate}
+      />,
       'Create New Service',
       'lg'
     );
   };
 
-  const handleEditUser = () => {
+  const handleEditService = (service) => {
     openModal(
-      <EditUserForm onClose={closeModal} />,
-      'Edit User',
-      'default'
+      <CreateServiceForm 
+        onClose={closeModal}
+        onSubmit={handleServiceUpdate}
+        editingService={service}
+      />,
+      'Edit Service',
+      'lg'
     );
   };
 
-  const handleDelete = async () => {
+  /**
+   * ✅ Create handler - receives service data
+   */
+  const handleServiceCreate = async (serviceData) => {
+    try {
+      await createMutation.mutateAsync(serviceData);
+      closeModal();
+    } catch (error) {
+      // Error already handled by mutation
+      console.error('Create service error:', error);
+    }
+  };
+
+  /**
+   * ✅ Update handler - receives service ID and data
+   */
+  const handleServiceUpdate = async (serviceId, serviceData) => {
+    try {
+      await updateMutation.mutateAsync({ serviceId, serviceData });
+      closeModal();
+    } catch (error) {
+      // Error already handled by mutation
+      console.error('Update service error:', error);
+    }
+  };
+
+  /**
+   * Delete handler with confirmation
+   */
+  const handleDeleteService = async (serviceId) => {
     const result = await confirm({
-      title: 'Delete Item?',
-      message: 'This action cannot be undone. All data will be permanently deleted.',
+      title: 'Delete Service?',
+      message: 'This action cannot be undone. The service will be permanently deleted.',
       confirmText: 'Delete',
       cancelText: 'Cancel',
       type: 'danger',
     });
 
     if (result) {
-      alert('Item deleted!');
+      try {
+        await deleteMutation.mutateAsync(serviceId);
+      } catch (error) {
+        // Error already handled by mutation
+        console.error('Delete service error:', error);
+      }
     }
   };
 
-  return (
-    <div className="p-8">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">ServiceManagement</h1>
+  /**
+   * Pagination handler
+   */
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  // ============================================
+  // LOADING STATE
+  // ============================================
+  
+  if (isLoading && page === 1) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-blue-700 to-blue-600 rounded-xl p-6 text-white shadow-lg">
+          <div className="flex items-center space-x-3">
+            <LayoutGrid size={28} />
+            <div>
+              <h2 className="text-2xl font-bold">Service Management</h2>
+              <p className="text-blue-100">Loading services...</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+            <p className="text-gray-600">Loading services...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ============================================
+  // ERROR STATE
+  // ============================================
+  
+  if (isError) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-blue-700 to-blue-600 rounded-xl p-6 text-white shadow-lg">
+          <div className="flex items-center space-x-3">
+            <LayoutGrid size={28} />
+            <div>
+              <h2 className="text-2xl font-bold">Service Management</h2>
+              <p className="text-blue-100">Error loading services</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+          <p className="text-red-800 font-medium">Failed to load services</p>
+          <p className="text-red-600 text-sm mt-2">{error?.message || 'Please try again later'}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ============================================
+  // MAIN RENDER
+  // ============================================
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-700 to-blue-600 rounded-xl p-6 text-white shadow-lg">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <LayoutGrid size={28} />
+            <div>
+              <h2 className="text-2xl font-bold">Service Management</h2>
+              <p className="text-blue-100">
+                Manage services and offerings for your website
+              </p>
+            </div>
+          </div>
           <button
             onClick={handleCreateService}
-            className="p-6 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-md hover:shadow-lg"
+            disabled={createMutation.isPending}
+            className="px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-2 font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <h3 className="text-lg font-semibold mb-2">Create Service</h3>
-            <p className="text-sm opacity-90">Add a new service to your catalog</p>
-          </button>
-
-          <button
-            onClick={handleEditUser}
-            className="p-6 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors shadow-md hover:shadow-lg"
-          >
-            <h3 className="text-lg font-semibold mb-2">Edit User</h3>
-            <p className="text-sm opacity-90">Update user information</p>
-          </button>
-
-          <button
-            onClick={handleDelete}
-            className="p-6 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-md hover:shadow-lg"
-          >
-            <h3 className="text-lg font-semibold mb-2">Delete Item</h3>
-            <p className="text-sm opacity-90">Remove an item permanently</p>
+            {createMutation.isPending ? (
+              <Loader2 size={20} className="animate-spin" />
+            ) : (
+              <Plus size={20} />
+            )}
+            Create Service
           </button>
         </div>
       </div>
+
+      {/* Filters */}
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search services..."
+                value={searchInput} // ✅ Use raw input state
+                onChange={(e) => setSearchInput(e.target.value)} // ✅ Update immediately for UX
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              {/* ✅ Show loading indicator when debouncing */}
+              {searchInput !== debouncedSearch && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <Loader2 size={16} className="text-gray-400 animate-spin" />
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+              Status:
+            </label>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Service Grid */}
+      {isLoading && page > 1 ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {services.map(service => {
+            const IconComponent = getIconComponent(service.iconName);
+            const isDeleting = deleteMutation.isPending && deleteMutation.variables === service._id;
+            
+            return (
+              <div 
+                key={service._id} 
+                className={`bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow ${
+                  isDeleting ? 'opacity-50' : ''
+                } ${service.__optimistic ? 'ring-2 ring-blue-400' : ''}`}
+              >
+                <div className="h-48 bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center relative">
+                  {service.heroImage?.url ? (
+                    <img 
+                      src={service.heroImage.url} 
+                      alt={service.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
+                      <IconComponent size={40} className="text-white" />
+                    </div>
+                  )}
+                  {service.__optimistic && (
+                    <div className="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                      Uploading...
+                    </div>
+                  )}
+                </div>
+                <div className="p-5">
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="text-xl font-bold text-gray-900">{service.title}</h3>
+                    <div className="flex items-center gap-1">
+                      {service.isPublished ? (
+                        <Eye size={18} className="text-green-600" />
+                      ) : (
+                        <EyeOff size={18} className="text-gray-400" />
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                    {service.shortDescription}
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEditService(service)}
+                      disabled={isDeleting || service.__optimistic}
+                      className="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors flex items-center justify-center gap-2 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Edit2 size={16} />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteService(service._id)}
+                      disabled={isDeleting || service.__optimistic}
+                      className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isDeleting ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : (
+                        <Trash2 size={16} />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {services.length === 0 && !isLoading && (
+        <div className="text-center py-16 bg-white rounded-xl border-2 border-dashed border-gray-300">
+          <LayoutGrid size={64} className="mx-auto text-gray-400 mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            No services found
+          </h3>
+          <p className="text-gray-600 mb-4">
+            {searchInput || statusFilter ? 'Try adjusting your filters' : 'Create your first service to get started'}
+          </p>
+          {!searchInput && !statusFilter && (
+            <button
+              onClick={handleCreateService}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium inline-flex items-center gap-2"
+            >
+              <Plus size={20} />
+              Create Service
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+          <div className="text-sm text-gray-600">
+            Showing {services.length} of {pagination.totalServices} services
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handlePageChange(page - 1)}
+              disabled={page === 1 || isLoading}
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            
+            <div className="flex gap-1">
+              {[...Array(pagination.totalPages)].map((_, idx) => {
+                const pageNum = idx + 1;
+                // Show first, last, current, and adjacent pages
+                if (
+                  pageNum === 1 ||
+                  pageNum === pagination.totalPages ||
+                  (pageNum >= page - 1 && pageNum <= page + 1)
+                ) {
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      disabled={isLoading}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        page === pageNum
+                          ? 'bg-blue-600 text-white'
+                          : 'border border-gray-300 hover:bg-gray-50'
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                } else if (pageNum === page - 2 || pageNum === page + 2) {
+                  return <span key={pageNum} className="px-2 py-2">...</span>;
+                }
+                return null;
+              })}
+            </div>
+
+            <button
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page === pagination.totalPages || isLoading}
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default ServiceManagement;
+
+
+"services": [
+            {
+                "title": "Research Services",
+                "slug": "research-services",
+                "subtitle": "Expert research services using qualitative and quantitative approaches. Drive growth with data-driven insights and expert analysis.",
+                "cardDescription": "Expert research services using qualitative and quantitative approaches to uncover actionable insights and market trends, helping businesses make informed decisions and stay ahead in a competitive landscape.\r\n\r\nnew text from another page",
+                "description": "Our research services combine advanced methodologies and deep industry expertise to deliver actionable insights that drive business growth. We specialize in both qualitative and quantitative research, offering robust data collection, analysis, and tailored solutions that address each client's unique goals. From market and consumer studies to impact assessments, our experienced team ensures precision, transparency, and measurable results at every stage. With a commitment to excellence and industry best practices, we empower organizations to make informed decisions, enhance performance, and gain a competitive edge in their markets.",
+                "iconName": "BarChart3",
+                "heroImage": {
+                    "url": "https://res.cloudinary.com/dakiagw0h/image/upload/v1769708129/pbgroup/services/active/research-services.webp",
+                    "publicId": "pbgroup/services/active/research-services",
+                    "width": 1920,
+                    "height": 1280,
+                    "format": "webp",
+                    "size": 117990
+                },
+                "researchTypes": [
+                    "Market Research and Assessment Survey",
+                    "Consumer Behavior and Satisfaction Survey",
+                    "Brand Equity and Performance Survey"
+                ],
+                "isPublished": true,
+                "showOnHomepage": true,
+                "displayOrder": 1,
+                "seo": {
+                    "metaTitle": "research service",
+                    "metaDescription": "research service",
+                    "metaKeywords": [
+                        "analysis",
+                        "research",
+                        "services",
+                        "pbgroup"
+                    ]
+                },
+                
+            }
+        ]
+
+
+
+        [
+  {
+    "title": "Research Services",
+    "slug": "research-services",
+    "subtitle": "Expert research services using qualitative and quantitative approaches. Drive growth with data-driven insights and expert analysis.",
+    "cardDescription": "Expert research services using qualitative and quantitative approaches to uncover actionable insights and market trends, helping businesses make informed decisions and stay ahead in a competitive landscape.",
+    "description": "Our research services combine advanced methodologies and deep industry expertise to deliver actionable insights that drive business growth. We specialize in both qualitative and quantitative research, offering robust data collection, analysis, and tailored solutions that address each client's unique goals. From market and consumer studies to impact assessments, our experienced team ensures precision, transparency, and measurable results at every stage.",
+    "iconName": "BarChart3",
+    "heroImage": {
+      "url": "https://res.cloudinary.com/dakiagw0h/image/upload/v1769708129/pbgroup/services/active/research-services.webp",
+      "publicId": "pbgroup/services/active/research-services",
+      "width": 1920,
+      "height": 1280,
+      "format": "webp",
+      "size": 117990
+    },
+    "researchTypes": [
+      "Market Research and Assessment Survey",
+      "Consumer Behavior and Satisfaction Survey",
+      "Brand Equity and Performance Survey",
+      "Pricing Analysis and Assessment Survey",
+      "Market Segmentation and Consumer Profiling Survey",
+      "Feasibility Study Survey",
+      "Baseline, Midline, and Endline Survey",
+      "Political and Opinion Survey",
+      "Monitoring and Evaluation (M&E) Survey",
+      "Impact Assessment Survey",
+      "Online Survey",
+      "Project Development and Design Survey"
+    ],
+    "isPublished": true,
+    "showOnHomepage": true,
+    "displayOrder": 1,
+    "seo": {
+      "metaTitle": "Research Services | Data-Driven Insights",
+      "metaDescription": "Professional research services delivering reliable qualitative and quantitative insights to support strategic decision-making and sustainable growth.",
+      "metaKeywords": ["research", "market research", "survey", "data analysis", "pbgroup"]
+    }
+  },
+
+  {
+    "title": "Survey Software & Apps",
+    "slug": "survey-software-apps",
+    "subtitle": "Smart survey solutions for real-time data collection and interactive insights.",
+    "cardDescription": "Advanced survey software and mobile app solutions for real-time data collection, easy download, and interactive dashboards.",
+    "description": "Our survey software and mobile applications enable seamless, secure, and real-time data collection across devices. With offline functionality, GPS tracking, smart validation, and powerful dashboards, organizations can manage surveys efficiently and transform raw responses into actionable insights.",
+    "iconName": "Smartphone",
+    "heroImage": {
+      "url": "",
+      "publicId": "",
+      "width": 0,
+      "height": 0,
+      "format": "",
+      "size": 0
+    },
+    "researchTypes": [
+      "Multi-language Support",
+      "Smart Validation & Skip Logic",
+      "GPS & Map Tracking",
+      "Offline & Online Data Collection",
+      "Easy Export to SPSS, Stata, Excel",
+      "Secure Cloud Storage",
+      "CAPI, CATI, CAWI, FGD & KII Support"
+    ],
+    "isPublished": true,
+    "showOnHomepage": true,
+    "displayOrder": 2,
+    "seo": {
+      "metaTitle": "Survey Software & Data Collection Apps",
+      "metaDescription": "Robust survey software and mobile apps for accurate, secure, and scalable data collection with real-time reporting.",
+      "metaKeywords": ["survey software", "data collection", "mobile survey", "CAPI", "CAWI"]
+    }
+  },
+
+  {
+    "title": "Data Analytics Service",
+    "slug": "data-analytics-service",
+    "subtitle": "Turn raw data into actionable insights with advanced analytics and visualization.",
+    "cardDescription": "Data analytics services designed to transform raw data into meaningful insights through advanced visualization and modeling.",
+    "description": "Our data analytics services help organizations unlock value from complex datasets using modern statistical, machine learning, and visualization techniques. We deliver dashboards, predictive models, and evidence-based insights that support smarter, faster decision-making.",
+    "iconName": "LineChart",
+    "heroImage": {
+      "url": "",
+      "publicId": "",
+      "width": 0,
+      "height": 0,
+      "format": "",
+      "size": 0
+    },
+    "researchTypes": [
+      "Descriptive & Inferential Statistics",
+      "Machine Learning & AI Models",
+      "Data Cleaning & Validation",
+      "Dashboard & Visualization",
+      "GIS & Spatial Analysis",
+      "Survey & Research Data Analysis"
+    ],
+    "isPublished": true,
+    "showOnHomepage": true,
+    "displayOrder": 3,
+    "seo": {
+      "metaTitle": "Data Analytics & Visualization Services",
+      "metaDescription": "Advanced data analytics services delivering predictive insights, dashboards, and AI-driven analysis for business growth.",
+      "metaKeywords": ["data analytics", "machine learning", "dashboard", "business intelligence"]
+    }
+  },
+
+  {
+    "title": "ICT Solutions",
+    "slug": "ict-solutions",
+    "subtitle": "Innovative ICT solutions that streamline operations and enable digital transformation.",
+    "cardDescription": "Comprehensive ICT solutions empowering businesses with smart, scalable, and secure technology systems.",
+    "description": "We provide end-to-end ICT solutions including software development, cloud services, cybersecurity, and system integration to modernize operations and drive digital transformation.",
+    "iconName": "MonitorSmartphone",
+    "heroImage": {
+      "url": "",
+      "publicId": "",
+      "width": 0,
+      "height": 0,
+      "format": "",
+      "size": 0
+    },
+    "researchTypes": [
+      "Web & Software Development",
+      "Cloud Services & IT Infrastructure",
+      "System Integration",
+      "Cybersecurity Solutions",
+      "IT Support & Maintenance"
+    ],
+    "isPublished": true,
+    "showOnHomepage": true,
+    "displayOrder": 4,
+    "seo": {
+      "metaTitle": "ICT Solutions & Digital Transformation",
+      "metaDescription": "Reliable ICT solutions including software, cloud, and cybersecurity services to support modern business operations.",
+      "metaKeywords": ["ICT solutions", "software development", "cloud services", "cybersecurity"]
+    }
+  },
+
+  {
+    "title": "Business Dashboard",
+    "slug": "business-dashboard",
+    "subtitle": "Interactive dashboards for real-time performance monitoring and KPI tracking.",
+    "cardDescription": "Business dashboards with real-time KPIs, analytics, and automated reporting for smarter decisions.",
+    "description": "Our business dashboards provide real-time visibility into organizational performance through intuitive visuals, KPI tracking, and automated reports, enabling leaders to make informed strategic decisions.",
+    "iconName": "LayoutDashboard",
+    "heroImage": {
+      "url": "",
+      "publicId": "",
+      "width": 0,
+      "height": 0,
+      "format": "",
+      "size": 0
+    },
+    "researchTypes": [
+      "KPI Monitoring",
+      "Automated Reporting",
+      "Financial & Operational Dashboards",
+      "Role-Based Access Control"
+    ],
+    "isPublished": true,
+    "showOnHomepage": true,
+    "displayOrder": 5,
+    "seo": {
+      "metaTitle": "Business Intelligence Dashboards",
+      "metaDescription": "Interactive business dashboards for KPI tracking, performance monitoring, and real-time analytics.",
+      "metaKeywords": ["business dashboard", "KPI", "business intelligence", "analytics"]
+    }
+  },
+
+  {
+    "title": "Capacity Building Training",
+    "slug": "capacity-building-training",
+    "subtitle": "Tailored training programs that enhance technical, analytical, and leadership skills.",
+    "cardDescription": "Expert-led capacity building training programs designed to strengthen skills and organizational performance.",
+    "description": "Our capacity-building training programs empower professionals and organizations with practical skills in data analytics, ICT, leadership, and digital tools through hands-on, expert-led learning.",
+    "iconName": "GraduationCap",
+    "heroImage": {
+      "url": "",
+      "publicId": "",
+      "width": 0,
+      "height": 0,
+      "format": "",
+      "size": 0
+    },
+    "researchTypes": [
+      "Data Analytics Training",
+      "ICT & IT Skills Development",
+      "Leadership & HR Training",
+      "GIS & Digital Tools Training",
+      "Corporate & Individual Programs"
+    ],
+    "isPublished": true,
+    "showOnHomepage": true,
+    "displayOrder": 6,
+    "seo": {
+      "metaTitle": "Capacity Building & Professional Training",
+      "metaDescription": "Professional capacity-building training programs focused on analytics, ICT, leadership, and workforce development.",
+      "metaKeywords": ["capacity building", "training", "data analytics training", "ICT training"]
+    }
+  }
+]
