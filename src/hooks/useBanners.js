@@ -62,7 +62,7 @@ export const useActiveBanner = () => {
 /**
  * Get all banners with automatic next-page prefetching
  */
-export const useAllBanners = ({ page = 1, limit = 10, status } = {}) => { 
+export const useAllBanners = ({ page = 1, limit = 6, status } = {}) => { 
   const user = useAuthStore((s) => s.user);
   const queryClient = useQueryClient();
   
@@ -169,7 +169,7 @@ export const useCreateBanner = () => {
       console.error('❌ Create banner error:', error);
     },
     
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success('Banner created successfully!', { id: 'create-banner' });
       
       // Invalidate to fetch real data from server
@@ -250,7 +250,7 @@ export const useUpdateBanner = () => {
 
   toast.loading('Updating service...', { id: 'update-service' });
 
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   await queryClient.cancelQueries({ queryKey: ['services'] });
 
   // Snapshot all service list queries
@@ -266,7 +266,7 @@ export const useUpdateBanner = () => {
     title: formData.get('title'),
     slug: formData.get('slug'),
     subtitle: formData.get('subtitle'),
-    shortDescription: formData.get('shortDescription'),
+    cardDescription: formData.get('cardDescription'),
     description: formData.get('description'),
     iconName: formData.get('iconName'),
     researchTypes: JSON.parse(formData.get('researchTypes') || '[]'),
@@ -331,7 +331,7 @@ export const useUpdateBanner = () => {
       console.error('❌ Update banner error:', error);
     },
     
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success('Banner updated successfully!', { id: 'update-banner' });
       
       // Fetch fresh data from server
@@ -394,7 +394,7 @@ export const useDeleteBanner = () => {
       console.error('❌ Delete banner error:', error);
     },
     
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success('Banner deleted successfully!', { id: 'delete-banner' });
       
       queryClient.invalidateQueries({ queryKey: ['banners'] });

@@ -14,12 +14,9 @@ import {
   useCreateBanner,
   useDeleteBanner,
   useUpdateBanner,
-} from "../../../hooks/useBanners.js";
-import LoadingFallback from "../../LoadingFallback.jsx";
-// import { useQueryClient } from "@tanstack/react-query";
-// import { useEffect } from "react";
-// import { getAllBannersApi } from "../../../api/bannerApi.js";
-
+} from "../../hooks/useBanners.js";
+import LoadingFallback from "../../components/common/LoadingFallback.jsx";
+import Pagination from '../../components/common/Pagination.jsx';
 
 const BannerCard = ({ banner, onEdit, onDelete }) => {
   // Check if this is an optimistic update
@@ -58,8 +55,8 @@ const BannerCard = ({ banner, onEdit, onDelete }) => {
           <span
             className={`px-3 py-1 rounded-full text-xs font-medium ${
               banner.isActive
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-500 text-white'
+                ? 'bg-green-800 text-white'
+                : 'bg-gray-800 text-white'
             }`}
           >
             {banner.isActive ? 'Active' : 'Inactive'}
@@ -308,7 +305,7 @@ export default function BannerManagement() {
   const { data, isLoading, isError, error } = useAllBanners({
     //here the first fetch all upto 1oth cards is called
     page,
-    limit: 10,
+    limit: 6,
     status: statusFilter,
   });
 
@@ -433,30 +430,15 @@ export default function BannerManagement() {
         </div>
       )}
 
-      {/* Pagination */}
-      {data?.pagination && data.pagination.totalPages > 1 && (
-        <div className="flex justify-center gap-2">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Previous
-          </button>
-          <span className="px-4 py-2 text-gray-700">
-            Page {page} of {data.pagination.totalPages}
-          </span>
-          <button
-            onClick={() =>
-              setPage((p) => Math.min(data.pagination.totalPages, p + 1))
-            }
-            disabled={page === data.pagination.totalPages}
-            className="px-4 py-2 border colorred border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      
+         <Pagination
+        currentPage={data?.pagination?.currentPage || page}
+        totalPages={data?.pagination?.totalPages || 1}
+        onPageChange={setPage}
+        totalItems={data?.pagination?.totalBanners}
+        currentItems={data?.banners?.length}
+        isLoading={isLoading}
+      />
 
       {/* Modal */}
       {showModal && (
@@ -473,3 +455,89 @@ export default function BannerManagement() {
     </div>
   );
 }
+
+
+// ## Step 3: explanation How pagination works
+// ```
+// ┌─────────────────────────────────────────────────────────────┐
+// │                    USER INTERACTION                         │
+// └─────────────────────────────────────────────────────────────┘
+//                               │
+//                               ▼
+// ┌─────────────────────────────────────────────────────────────┐
+// │  User clicks "Next" or page number button                   │
+// │  → Pagination component calls: onPageChange(newPage)        │
+// └─────────────────────────────────────────────────────────────┘
+//                               │
+//                               ▼
+// ┌─────────────────────────────────────────────────────────────┐
+// │  setPage(newPage) is called                                 │
+// │  → State updates: page = 2 (for example)                    │
+// └─────────────────────────────────────────────────────────────┘
+//                               │
+//                               ▼
+// ┌─────────────────────────────────────────────────────────────┐
+// │  useAllBanners hook detects page change                     │
+// │  → Automatically refetches data with new page               │
+// │  → API call: GET /banners?page=2&limit=10                   │
+// └─────────────────────────────────────────────────────────────┘
+//                               │
+//                               ▼
+// ┌─────────────────────────────────────────────────────────────┐
+// │  API responds with new data:                                │
+// │  {                                                           │
+// │    banners: [...10 new items...],                           │
+// │    pagination: {                                             │
+// │      currentPage: 2,                                         │
+// │      totalPages: 5,                                          │
+// │      totalBanners: 47                                        │
+// │    }                                                          │
+// │  }                                                            │
+// └─────────────────────────────────────────────────────────────┘
+//                               │
+//                               ▼
+// ┌─────────────────────────────────────────────────────────────┐
+// │  Component re-renders with new data                         │
+// │  → BannerCard shows new banners                             │
+// │  → Pagination updates to show current page (2)              │
+// └─────────────────────────────────────────────────────────────┘
+// ```
+
+// ---
+
+// ## Step 4: Visual Example - What User Sees
+
+// ### **Scenario: You have 47 banners total**
+// ```
+// Page 1 (showing 10 items):
+// ┌──────────────────────────────────────────────────────────┐
+// │  Showing 10 of 47 items                                  │
+// │                                                           │
+// │  [Previous] [1] [2] [3] ... [5] [Next]                  │
+// │             ^^^                                           │
+// │           (active)                                        │
+// └──────────────────────────────────────────────────────────┘
+
+// User clicks "Next" or "2"
+//         ↓
+
+// Page 2 (showing 10 items):
+// ┌──────────────────────────────────────────────────────────┐
+// │  Showing 10 of 47 items                                  │
+// │                                                           │
+// │  [Previous] [1] [2] [3] ... [5] [Next]                  │
+// │                 ^^^                                       │
+// │               (active)                                    │
+// └──────────────────────────────────────────────────────────┘
+
+// User clicks "5" (last page)
+//         ↓
+
+// Page 5 (showing 7 items - last page):
+// ┌──────────────────────────────────────────────────────────┐
+// │  Showing 7 of 47 items                                   │
+// │                                                           │
+// │  [Previous] [1] ... [3] [4] [5] [Next]                  │
+// │                         ^^^   (disabled)                  │
+// │                       (active)                            │
+// └──────────────────────────────────────────────────────────┘

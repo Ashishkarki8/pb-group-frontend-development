@@ -22,7 +22,7 @@ export const services = [
     id: 1,
     title: "Research Services", 
     slug: "research-services",
-    shortDescription:  //in cards
+    cardDescription:  //in cards
       "Expert research services using qualitative and quantitative approaches to uncover actionable insights and market trends, helping businesses make informed decisions and stay ahead in a competitive landscape.",
     subtitle:  // just below the title shown in the details page
       "Expert research services using qualitative and quantitative approaches. Drive growth with data-driven insights and expert analysis.",
@@ -78,7 +78,7 @@ export const services = [
   id: 2,
   title: "Survey Software & Apps",
   slug: "survey-software-apps",
-  shortDescription:
+  cardDescription:
     "Advanced survey software and mobile app solutions for real-time data collection, easy download, and interactive dashboards, turning information into actionable insights for smarter business decisions.",
   subtitle:
     "Smart survey solutions for real-time data collection and interactive insights.",
@@ -134,7 +134,7 @@ export const services = [
   id: 3,
   title: "Data Analytics Service",
   slug: "data-analytics-service",
-  shortDescription:
+  cardDescription:
     "Data analytics services designed to transform raw data into meaningful insights through advanced visualization, machine learning, and expert-driven reporting.",
   subtitle:
     "Turn raw data into actionable insights with advanced analytics and visualization.",
@@ -190,7 +190,7 @@ export const services = [
     id: 4,
     title: "ICT Solutions",
     slug: "ict-solutions",
-    shortDescription:
+    cardDescription:
       "Comprehensive ICT Solutions that empower businesses with smart technology, streamlined operations, and innovative tools for growth, efficiency, and success.",
     subtitle:
       "Innovative ICT solutions that streamline operations and enable digital transformation.",
@@ -238,7 +238,7 @@ export const services = [
     id: 5,
     title: "Business Dashboard",
     slug: "business-dashboard",
-    shortDescription:
+    cardDescription:
       "Our business management analytics provide comprehensive dashboards, KPI tracking, and predictive models that help you monitor performance, identify opportunities, and make informed decisions.",
     subtitle:
       "Interactive dashboards for real-time performance monitoring and KPI tracking.",
@@ -276,7 +276,7 @@ export const services = [
   id: 6,
   title: "Capacity Building Training",
   slug: "capacity-building-training",
-  shortDescription:
+  cardDescription:
     "Empowering individuals and organizations through expert-led training in data analytics, ICT, leadership, HR, and soft skills to drive sustainable growth and excellence.",
   subtitle:
     "Tailored training programs that enhance technical, analytical, and leadership skills.",

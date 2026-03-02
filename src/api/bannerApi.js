@@ -16,7 +16,7 @@ export const getActiveBannerApi = async () => {
  * Get all banners with pagination (ADMIN)
  * @param {Object} params - { page, limit, status }
  */
-export const getAllBannersApi = async ({ page = 1, limit = 10, status }) => {
+export const getAllBannersApi = async ({ page = 1, limit = 6, status }) => {
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Suspense } from 'react';
 import { Outlet, ScrollRestoration } from 'react-router-dom'; // ✅ Add these imports
-import LoadingFallback from './components/LoadingFallback';
+import LoadingFallback from './components/common/LoadingFallback';
 import useAuthStore from './store/authStore';
 import { ModalProvider } from './contexts/ModalContext';
 import { ConfirmProvider } from './contexts/ConfirmContext'; 

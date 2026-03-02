@@ -40,6 +40,7 @@ const CoursesSection = () => {
     isTrending: true,
     isFeatured: true,
     isUpcoming: true,
+
   },
   {
     id: 2,

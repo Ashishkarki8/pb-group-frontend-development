@@ -29,9 +29,11 @@ import AdminRegister from './pages/admin-pages/AdminRegister';
 import Unauthorized from './pages/admin-pages/Unauthorized';
 import NotFoundPage from './pages/NotFoundPage';
 import Testing from './pages/admin-pages/Testing';
-import BannerManagement from './components/features/admin/BannerManagement';
+
 import ServiceManagement from './pages/admin-pages/ServiceManagement';
 import HomePageCMS from './pages/admin-pages/cms/HomePageCMS';
+import BannerManagement from './pages/admin-pages/BannerManagement';
+import CourseManagement from './pages/admin-pages/CourseManagement/CourseManagement';
 
 // CMS Pages
 // import HeroSection from './pages/admin-pages/cms/HeroSection';
@@ -83,6 +85,7 @@ export const router = createBrowserRouter([
           { path: 'dashboard', element: <AdminDashboard /> },
           { path: 'banners', element: <BannerManagement /> },
           { path: 'services', element: <ServiceManagement /> },
+          { path: 'courses', element: <CourseManagement /> },
           
           // CMS Routes
            { path: 'cms/homepage', element: <HomePageCMS /> },
